@@ -16,7 +16,6 @@ export default function Waiting(props) {
     }
   }, [gameID, navigate]);
 
-  // When the piece type changes, update the piece type in a temp varibale
   useEffect(() => {
     if (pieceTypeO) {
       setImageSrc(require('../assets/blueO.png'));
