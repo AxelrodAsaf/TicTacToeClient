@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Styles/App.css';
-import '../Styles/Waiting.css';
+import '../Styles/Connecting.css';
 
-export default function Waiting(props) {
+export default function Connecting(props) {
   const gameID = props.gameID;
   const pieceTypeO = props.pieceTypeO;
+  const username = props.username;
   const navigate = useNavigate();
   const [imageSrc, setImageSrc] = useState();
 
@@ -14,10 +15,13 @@ export default function Waiting(props) {
     if (!gameID) {
       navigate('/');
     }
+    if (!username) {
+      navigate('/');
+    }
   }, [gameID, navigate]);
 
   useEffect(() => {
-    if (pieceTypeO) {
+    if (!pieceTypeO) {
       setImageSrc(require('../assets/blueO.png'));
     }
     else {
@@ -26,24 +30,20 @@ export default function Waiting(props) {
   }, [setImageSrc]);
 
 
-  function copyGameID() {
-    navigator.clipboard.writeText(gameID);
-  }
-
-
   return (
     <div className='main-div'>
       <div className="main-subdiv">
         <div className='top'>
-          <h1>Waiting for the second player to connect...</h1>
+          <h1>CONNECTING TO THE GAME</h1>
+          <h3>This might take a moment...</h3>
           <hr style={{ width: "50%" }} />
-          <strong>{gameID}</strong>
-          <button onClick={copyGameID}>COPY GAME ID</button>
+          <h3>Game ID: {gameID}</h3>
+          <hr style={{ width: "50%" }} />
         </div>
 
 
         <div className='bottom'>
-          <h2>You will be playing as:</h2>
+          <h2>{username}, you will be playing as:</h2>
           <img src={imageSrc} alt={pieceTypeO ? "BlueO" : "RedX"} />
         </div>
         <button onClick={() => navigate('/')}>BACK</button>
