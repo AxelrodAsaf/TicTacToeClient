@@ -1,0 +1,30 @@
+/* Color Palette:
+Background:
+Primary- #283f52
+Secondary- #2e4a60
+Borders- #425e74
+
+Texts/Objects:
+Primary- #fefdfb
+Secondary- #00b158
+
+*/
+
+html {
+  background-color: #283f52;
+  color: #fefdfb;
+}
+
+input {
+  background-color: #fefdfb;
+  border: 3px solid #425e74;
+}
+
+button {
+  cursor: pointer;
+  color: #fefdfb;
+  background-color: #00b158;
+  border: none;
+  border-radius: 10px;
+  margin: 1%;
+}
