@@ -23,7 +23,7 @@ export default function Waiting(props) {
     else {
       setImageSrc(require('../assets/redX.png'));
     }
-  }, [setImageSrc]);
+  }, [setImageSrc, pieceTypeO]);
 
 
   function copyGameID() {

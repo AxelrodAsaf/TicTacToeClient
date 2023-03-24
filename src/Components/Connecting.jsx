@@ -13,12 +13,12 @@ export default function Connecting(props) {
   // When starting the page, check if there is a gameID, if not, redirect to home page
   useEffect(() => {
     if (!gameID) {
-      navigate('/');
+      navigate('/joingame');
     }
     if (!username) {
       navigate('/');
     }
-  }, [gameID, navigate]);
+  }, [gameID, navigate, username]);
 
   useEffect(() => {
     if (!pieceTypeO) {
@@ -27,8 +27,14 @@ export default function Connecting(props) {
     else {
       setImageSrc(require('../assets/redX.png'));
     }
-  }, [setImageSrc]);
+  }, [setImageSrc, pieceTypeO]);
 
+  // Set a timer for 3 seconds and then redirect to home page
+  useEffect(() => {
+    setTimeout(() => {
+      navigate(`/gameboard/:${gameID}`);
+    }, 1500);
+  }, [navigate, gameID]);
 
   return (
     <div className='main-div'>
