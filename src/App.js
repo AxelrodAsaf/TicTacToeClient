@@ -18,7 +18,7 @@ function App() {
         <Route path={"/"} element={<Start username={username} setUsername={setUsername} />} />
         <Route path="/hostgame" element={<HostGame username={username} setUsername={setUsername} pieceTypeO={pieceTypeO} setPieceTypeO={setPieceTypeO} gameID={gameID} setGameID={setGameID} />} />
         <Route path="/waiting" element={<Waiting username={username} setUsername={setUsername} pieceTypeO={pieceTypeO} setPieceTypeO={setPieceTypeO} gameID={gameID} setGameID={setGameID} />} />
-        <Route path="/joingame" element={<JoinGame username={username} setUsername={setUsername} pieceTypeO={pieceTypeO} setPieceTypeO={setPieceTypeO} gameID={gameID} setGameID={setGameID} />} />
+        <Route path="/joingame" element={<JoinGame username={username} pieceTypeO={pieceTypeO} gameID={gameID} setGameID={setGameID} />} />
         <Route path="/viewgame" element={<ViewGame username={username} setUsername={setUsername} />} />
         <Route path="*" element={<Start />} />
       </Routes>
