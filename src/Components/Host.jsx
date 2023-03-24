@@ -11,11 +11,15 @@ export default function Host(props) {
   const setGameID = props.setGameID;
   const [tempPieceType, setTempPieceType] = useState();
   const [currentTime, setCurrentTime] = useState();
-  const [sliderValue, setSliderValue] = useState();
   const [imageSrc, setImageSrc] = useState();
 
   // Check to see if there is a user, if not, redirect to start page
   useEffect(() => { if (!username) { navigate('/'); } }, [username, navigate]);
+
+  // When the page renders, set the image src and slider value to X
+  useEffect(() => {
+      setImageSrc(true);
+  }, [pieceTypeO]);
 
   // When the page renders, get the current machine's date and time
   useEffect(() => {
@@ -32,12 +36,10 @@ export default function Host(props) {
     if (pieceTypeO) {
       setTempPieceType("O");
       setImageSrc(require('../assets/blueO.png'));
-      setSliderValue(true);
     }
     else {
       setTempPieceType("X");
       setImageSrc(require('../assets/redX.png'));
-      setSliderValue(false);
     }
   }, [pieceTypeO, setTempPieceType, setImageSrc]);
 
@@ -62,7 +64,7 @@ export default function Host(props) {
 
         <div className='slider-options'>
           <img src={imageSrc} alt={pieceTypeO ? "BlueO" : "RedX"} />
-          <label className="switch"><input type="checkbox" value={sliderValue} onChange={(e) => setPieceTypeO(e.target.checked)} /><span className="slider round"></span></label>
+          <label className="switch"><input type="checkbox" value={pieceTypeO} defaultChecked={pieceTypeO} onChange={(e) => setPieceTypeO(e.target.checked)} /><span className="slider round"></span></label>
         </div>
 
         <div className='nav-handles'>
