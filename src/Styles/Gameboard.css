@@ -1,0 +1,36 @@
+.gameboard-div {
+  height: 300px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.gameboard {
+  height: 100%;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+tbody {
+  border: solid 3px;
+  height: 100%;
+  width: 100%;
+}
+
+tr {
+  height: 33.33%;
+}
+
+tr:first-child {
+  height: calc(100% / 3);
+}
+
+td {
+  height: calc(100% / 3);
+  width: calc(100% / 3);
+  border: white solid 1px;
+  text-align: center;
+  vertical-align: middle;
+}

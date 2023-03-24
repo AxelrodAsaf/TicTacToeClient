@@ -1,26 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Styles/App.css';
 import '../Styles/Join.css';
 
 export default function Join(props) {
   const navigate = useNavigate();
-  const pieceTypeO = props.pieceTypeO;
   const username = props.username;
-  const gameID = props.gameID;
   const setGameID = props.setGameID;
-  const [imageSrc, setImageSrc] = useState();
   const [buttonText, setButtonText] = useState("JOIN");
-
-  // Notice that this useEffect has the opposite picture for Player2
-  useEffect(() => {
-    if (pieceTypeO) {
-      setImageSrc(require('../assets/redX.png'));
-    }
-    else {
-      setImageSrc(require('../assets/blueO.png'));
-    }
-  }, [setImageSrc]);
 
   // Handle the click of the join button
   function handleJoin() {

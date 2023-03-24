@@ -51,11 +51,6 @@ export default function Host(props) {
     setGameID(tempGameID);
   }, [tempGameID, setGameID]);
 
-  // Function to handle next
-  function handleNext() {
-    console.log("MOVE TO NEXT PAGE")
-  }
-
 
   return (
     <div className='main-div'>
