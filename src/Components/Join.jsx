@@ -7,9 +7,10 @@ export default function Join(props) {
   const navigate = useNavigate();
   const pieceTypeO = props.pieceTypeO;
   const username = props.username;
+  const gameID = props.gameID;
+  const setGameID = props.setGameID;
   const [imageSrc, setImageSrc] = useState();
-
-
+  const [buttonText, setButtonText] = useState("JOIN");
 
   // Notice that this useEffect has the opposite picture for Player2
   useEffect(() => {
@@ -21,6 +22,19 @@ export default function Join(props) {
     }
   }, [setImageSrc]);
 
+  // Handle the click of the join button
+  function handleJoin() {
+    const inputValue = document.getElementById("joinGameID").value;
+    setGameID(inputValue);
+    console.log(inputValue);
+
+    // Change the button text to "LOADING..." for 2 seconds
+    setButtonText("LOADING...");
+    setTimeout(() => {
+      setButtonText("JOIN GAME");
+      navigate(`/connecting`);
+    }, 2000);
+  }
 
   return (
     <div className='main-div'>
@@ -29,19 +43,17 @@ export default function Join(props) {
           <h1>Hello {username}!</h1>
 
           <h3>What game would you like to join?</h3>
-          <input placeholder='Insert Game ID' type={"text"} required />
-          <button onClick={() => navigate(`/waiting`)}>JOIN GAME</button>
+          <input id="joinGameID" placeholder='Insert Game ID' type={"text"} required />
+          <button style={{ width: "auto"}} onClick={() => handleJoin()}>{buttonText}</button>
           <button onClick={() => navigate('/')}>BACK</button>
         </div>
-
-{/*     <div className='bottom'>
+        {/* <div className='bottom'>
           <hr style={{ width: "50%" }} />
           <h2>You will be playing as:</h2>
           <img src={imageSrc} alt={pieceTypeO ? "BlueO" : "RedX"} />
         </div>
-        <button onClick={() => navigate('/')}>BACK</button>
-      </div> */}
-    </div >
+        <button onClick={() => navigate('/')}>BACK</button> */}
+      </div >
     </div >
   )
 }
