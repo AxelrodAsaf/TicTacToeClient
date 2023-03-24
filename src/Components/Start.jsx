@@ -20,7 +20,6 @@ export default function Start(props) {
           <h1>Welcome to Asaf's Tic-Tac-Toe!</h1>
           <input onChange={(e) => setTempUsername(e.target.value)} type='text' className='input-text' placeholder='Enter your name...' />
           <button onClick={defineUsername}>SUBMIT</button>
-          <button onClick={() => navigate('/gameboard')}>GAMEBOARD TEST BUTTON</button>
         </div>
         <div className='secondStep-div' style={username ? {} : { display: "none" }}>
           <h1>Hello {username}!</h1>
