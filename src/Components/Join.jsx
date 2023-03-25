@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Styles/App.css';
@@ -10,17 +11,28 @@ export default function Join(props) {
   const [buttonText, setButtonText] = useState("JOIN");
 
   // Handle the click of the join button
-  function handleJoin() {
+  async function handleJoin() {
     const inputValue = document.getElementById("joinGameID").value;
     setGameID(inputValue);
     console.log(inputValue);
 
+    // Send the server request to join the game
+    const response = await axios.post(`http://localhost:8000/joinGame`, {
+      username: username,
+      gameID: inputValue
+    })
+
+    if (response.status === 200) {
     // Change the button text to "LOADING..." for 2 seconds
     setButtonText("LOADING...");
     setTimeout(() => {
       setButtonText("JOIN GAME");
       navigate(`/connecting`);
     }, 2000);
+    }
+    else {
+      console.error("THERE WAS AN ERROR JOINING THE GAME");
+    }
   }
 
   return (
