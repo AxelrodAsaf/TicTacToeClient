@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client';
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Styles/App.css';
 import '../Styles/Join.css';
@@ -8,7 +8,6 @@ export default function Join(props) {
   const navigate = useNavigate();
   const username = props.username;
   const setGameID = props.setGameID;
-  const [buttonText, setButtonText] = useState("JOIN");
 
   // Handle the click of the join button
   async function handleJoin() {
@@ -25,16 +24,14 @@ export default function Join(props) {
       // Listen for "joinGameSuccess" event from the server
       socket.on('joinGameSuccess', (response) => {
         console.log(response.message);
-        // Change the button text to "JOIN GAME" and navigate to "/gameboard" page
-        setButtonText("JOIN GAME");
+        console.log("Sending a player2Joined message...")
+        socket.emit("player2Joined", "Yes");
         navigate(`/gameboard/:${inputValue}`);
       });
 
       // Listen for "joinGameError" event from the server
       socket.on('joinGameError', (response) => {
         console.error(response.error);
-        // Change the button text to "JOIN GAME" and display the error message
-        setButtonText("JOIN GAME");
         alert(response.error);
       });
     } catch (error) {
@@ -53,7 +50,7 @@ export default function Join(props) {
 
           <h3>What game would you like to join?</h3>
           <input id="joinGameID" placeholder='Insert Game ID' type={"text"} required />
-          <button style={{ width: "auto"}} onClick={() => handleJoin()}>{buttonText}</button>
+          <button style={{ width: "auto"}} onClick={() => handleJoin()}>JOIN GAME</button>
           <button onClick={() => navigate('/')}>BACK</button>
         </div>
       </div >
