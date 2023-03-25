@@ -62,8 +62,7 @@ export default function Host(props) {
       gameID: tempGameID
     })
     console.log(response);
-    return navigate(`/gameboard/${tempGameID}`); // For testing purposes, send directly to the gameboard
-    // return navigate('/waiting');
+    return navigate('/waiting');
     }
     catch (error) {
       console.log(error);
