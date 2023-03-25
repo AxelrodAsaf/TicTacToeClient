@@ -12,37 +12,74 @@ export default function Gameboard(props) {
   const gameID = props.gameID;
   const [playerPiece, setPlayerPiece] = useState("X");
   const [gameboard, setGameboard] = useState([]);
+  const [gameData, setGameData] = useState();
+  const [player1Piece, setPlayer1Piece] = useState("#");
+  const [player2Piece, setPlayer2Piece] = useState("#");
 
   async function getGameboard(gameID) {
     const response = await axios.get(`http://localhost:8000/getGame/${gameID}`);
     console.log(`Response: ${JSON.stringify(response.data)}`);
-    const gameboardData = response.data;
-    console.log(gameboardData)
-    setGameboard(gameboardData.gameboard);
+    const gameDataResponse = response.data;
+    console.log(gameDataResponse)
+    setGameData(gameDataResponse);
+    setGameboard(gameDataResponse.gameboard);
     // Check if the player is player 1 or player 2 in the gameboard data
-    if (gameboardData.players[0] === username) {
-      setPlayerPiece("O");
-    } else if (gameboardData.players[1] === username) {
-      setPlayerPiece("X");
+    if (gameData.players[0] === username) {
+      // Get the player piece from the gameboard data
+      setPlayerPiece(gameData.player1Piece);
+    } else {
+      // Get the player piece from the gameboard data
+      setPlayerPiece(gameData.player2Piece);
     }
+    setPlayer1Piece(gameData.player1Piece);
+    setPlayer2Piece(gameData.player2Piece);
   }
 
-  function handleMove(cell) {
+  async function handleMove(cell) {
     console.log(`Filling ${cell} gamePiece: ${playerPiece}`);
+    // Make the move by making a request to the server
+    const response = await axios.post(`http://localhost:8000/makeMove/${gameID}`, {
+      cell: cell,
+      playerPiece: playerPiece,
+      username: username
+    });
+    if (response.status === 200) {
+      console.log(`Response: ${JSON.stringify(response.data)}`);
+    }
+    else {
+      console.log(`Response: ${JSON.stringify(response.data)}`);
+    }
   }
 
   useEffect(() => {
     if (gameID) {
       getGameboard(gameID);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameID]);
 
   return (
     <div className='main-div'>
       <div className='main-subdiv'>
         <div className='top-text'>
-          <h1>Hello {username}!</h1>
-          <h1>You are playing as {playerPiece}</h1>
+          <div>
+            <h1>{gameData?.players[0]}</h1>
+            {player1Piece === "X" &&
+              <img style={{ marginBottom: "50%" }} src={redX} alt='X' className='x-icon' />
+            }
+            {player1Piece === "O" &&
+              <img style={{ marginBottom: "50%" }} src={blueO} alt='O' className='o-icon' />
+            }
+          </div>
+          <div>
+            <h1>{gameData?.players[1]}</h1>
+            {player2Piece === "X" &&
+              <img style={{ marginBottom: "50%" }} src={redX} alt='X' className='x-icon' />
+            }
+            {player2Piece === "O" &&
+              <img style={{ marginBottom: "50%" }} src={blueO} alt='O' className='o-icon' />
+            }
+          </div>
         </div>
         <div className='gameboard-div'>
           <table className='gameboard'>
@@ -52,12 +89,15 @@ export default function Gameboard(props) {
                   {subArray.map((value, j) => {
                     const cell = i * 3 + (j % 3);
                     return (
-                      <td key={`value-${j}`} className={`value cell-${cell}`} onClick={()=> handleMove(cell)}>
+                      <td style={{ cursor: "crosshair" }} key={`value-${j}`} className={`value cell-${cell}`} onClick={() => handleMove(cell)}>
                         {value === "X" &&
-                        <img src={redX} alt='X' className='x-icon'/>
+                          <img style={{ cursor: "not-allowed" }} src={redX} alt='X' className='x-icon' />
                         }
                         {value === "O" &&
-                        <img src={blueO} alt='O' className='o-icon'/>
+                          <img style={{ cursor: "not-allowed" }} src={blueO} alt='O' className='o-icon' />
+                        }
+                        {value === "#" &&
+                          <p>#</p>
                         }
                       </td>
                     );
@@ -66,11 +106,20 @@ export default function Gameboard(props) {
               ))}
             </tbody>
           </table>
+          <p>GameID: {gameID}</p>
+          <p> Turn to play: </p>
+          {gameData?.turn === "X" &&
+            <img style={{ marginBottom: "15%" }} src={redX} alt='X' className='x-icon' />
+          }
+          {gameData?.turn === "O" &&
+            <img style={{ marginBottom: "15%" }} src={blueO} alt='O' className='o-icon' />
+          }
         </div>
 
-
-        <button onClick={() => navigate(`/joingame`)} type='button' className='button-start'>BACK</button>
-        <button onClick={() => navigate(`/`)} type='button' className='button-start'>EXIT</button>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <button style={{ marginTop: "5%" }} onClick={() => navigate(`/joingame`)} type='button' className='button-start'>BACK</button>
+          <button style={{ marginTop: "5%" }} onClick={() => navigate(`/`)} type='button' className='button-start'>EXIT</button>
+        </div>
       </div>
     </div>
   );
