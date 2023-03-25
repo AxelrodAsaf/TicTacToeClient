@@ -1,0 +1,15 @@
+.xwin-img {
+  width: 40vw;
+  height: 40vw;
+}
+
+.xwin-h1 {
+  color: salmon;
+  font-weight: bolder;
+  text-decoration: underline;
+}
+
+.home-button {
+  width: 33%;
+  height: 5%;
+}
