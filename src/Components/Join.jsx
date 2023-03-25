@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { io } from 'socket.io-client';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Styles/App.css';
@@ -16,24 +16,34 @@ export default function Join(props) {
     setGameID(inputValue);
     console.log(inputValue);
 
-    // Send the server request to join the game
-    const response = await axios.post(`http://localhost:8000/joinGame`, {
-      username: username,
-      gameID: inputValue
-    })
+    try {
+      // Create a new socket instance
+      const socket = io('http://localhost:8000');
+      // Send the "joinGame" event to the server with the data
+      socket.emit('joinGame', { username: username, gameID: inputValue });
 
-    if (response.status === 200) {
-    // Change the button text to "LOADING..." for 2 seconds
-    setButtonText("LOADING...");
-    setTimeout(() => {
-      setButtonText("JOIN GAME");
-      navigate(`/connecting`);
-    }, 2000);
-    }
-    else {
-      console.error("THERE WAS AN ERROR JOINING THE GAME");
+      // Listen for "joinGameSuccess" event from the server
+      socket.on('joinGameSuccess', (response) => {
+        console.log(response.message);
+        // Change the button text to "JOIN GAME" and navigate to "/gameboard" page
+        setButtonText("JOIN GAME");
+        navigate(`/gameboard/:${inputValue}`);
+      });
+
+      // Listen for "joinGameError" event from the server
+      socket.on('joinGameError', (response) => {
+        console.error(response.error);
+        // Change the button text to "JOIN GAME" and display the error message
+        setButtonText("JOIN GAME");
+        alert(response.error);
+      });
+    } catch (error) {
+      console.log(error);
     }
   }
+
+
+
 
   return (
     <div className='main-div'>
@@ -46,12 +56,6 @@ export default function Join(props) {
           <button style={{ width: "auto"}} onClick={() => handleJoin()}>{buttonText}</button>
           <button onClick={() => navigate('/')}>BACK</button>
         </div>
-        {/* <div className='bottom'>
-          <hr style={{ width: "50%" }} />
-          <h2>You will be playing as:</h2>
-          <img src={imageSrc} alt={pieceTypeO ? "BlueO" : "RedX"} />
-        </div>
-        <button onClick={() => navigate('/')}>BACK</button> */}
       </div >
     </div >
   )

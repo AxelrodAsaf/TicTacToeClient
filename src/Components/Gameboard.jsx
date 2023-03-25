@@ -1,6 +1,6 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import io from 'socket.io-client';
 import redX from '../assets/redX.png';
 import blueO from '../assets/blueO.png';
 import '../Styles/App.css';
@@ -10,53 +10,89 @@ export default function Gameboard(props) {
   const navigate = useNavigate();
   const username = props.username;
   const gameID = props.gameID;
-  const [playerPiece, setPlayerPiece] = useState("X");
+  const [playerPiece, setPlayerPiece] = useState('X');
   const [gameboard, setGameboard] = useState([]);
   const [gameData, setGameData] = useState();
-  const [player1Piece, setPlayer1Piece] = useState("#");
-  const [player2Piece, setPlayer2Piece] = useState("#");
+  const [player1Piece, setPlayer1Piece] = useState('#');
+  const [player2Piece, setPlayer2Piece] = useState('#');
+  const socketRef = useRef();
 
-  async function getGameboard(gameID) {
-    const response = await axios.get(`http://localhost:8000/getGame/${gameID}`);
-    console.log(`Response: ${JSON.stringify(response.data)}`);
-    const gameDataResponse = response.data;
-    console.log(gameDataResponse)
-    setGameData(gameDataResponse);
-    setGameboard(gameDataResponse.gameboard);
-    // Check if the player is player 1 or player 2 in the gameboard data
-    if (gameData.players[0] === username) {
-      // Get the player piece from the gameboard data
-      setPlayerPiece(gameData.player1Piece);
-    } else {
-      // Get the player piece from the gameboard data
-      setPlayerPiece(gameData.player2Piece);
-    }
-    setPlayer1Piece(gameData.player1Piece);
-    setPlayer2Piece(gameData.player2Piece);
-  }
-
-  async function handleMove(cell) {
-    console.log(`Filling ${cell} gamePiece: ${playerPiece}`);
-    // Make the move by making a request to the server
-    const response = await axios.post(`http://localhost:8000/makeMove/${gameID}`, {
-      cell: cell,
-      playerPiece: playerPiece,
-      username: username
-    });
-    if (response.status === 200) {
-      console.log(`Response: ${JSON.stringify(response.data)}`);
-    }
-    else {
-      console.log(`Response: ${JSON.stringify(response.data)}`);
-    }
+  function getGameboard(gameID) {
+    socketRef.current.emit("getGame", { gameID: gameID });
   }
 
   useEffect(() => {
     if (gameID) {
+      // Connect to the server using socket.io
+      socketRef.current = io.connect('http://localhost:8000');
       getGameboard(gameID);
+      // Listen for "getGameSuccess" event
+      socketRef.current.on("getGameSuccess", (data) => {
+        const gameDataResponse = data.gameData;
+        console.log(`Response: ${JSON.stringify(gameDataResponse)}`);
+        setGameData(gameDataResponse);
+        setGameboard(gameDataResponse.gameboard);
+        // Check if the player is player 1 or player 2 in the gameboard data
+        if (gameDataResponse.players[0] === username) {
+          // Get the player piece from the gameboard data
+          setPlayerPiece(gameDataResponse.player1Piece);
+        } else {
+          // Get the player piece from the gameboard data
+          setPlayerPiece(gameDataResponse.player2Piece);
+        }
+        setPlayer1Piece(gameDataResponse.player1Piece);
+        setPlayer2Piece(gameDataResponse.player2Piece);
+      });
+      // Listen for "getGameError" event
+      socketRef.current.on("getGameError", (data) => {
+        const error = data.error;
+        console.error(`Error fetching gameboard: ${error}`);
+      });
+      // Listen for the move event from the server
+      socketRef.current.on('moveMade', (data) => {
+        console.log(`Move received: ${JSON.stringify(data)}`);
+        // Update the gameboard state with the new move
+        setGameboard(data.gameboard);
+      });
+      // Listen for the gameOver event from the server
+      socketRef.current.on('gameOver', (data) => {
+        console.log(data.winner)
+        if (data.winner === "X") {
+          return navigate('/Xwin');
+        }
+        if (data.winner === "O") {
+          return navigate('/Owin');
+        }
+        if (data.winner === "T") {
+          return navigate('/Draw');
+        }
+        // Redirect to the lobby page when the game is over
+        navigate('/');
+      });
     }
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      console.log("Disconnecting from server");
+      socketRef.current.disconnect();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameID]);
+
+  function handleMove(cell) {
+    console.log(`Attempting to fill ${cell} with gamePiece: ${playerPiece}`);
+    // Emit the move event to the server using socket.io
+    socketRef.current.emit('makeMove', {
+      gameID: gameID,
+      cell: cell,
+      playerPiece: playerPiece,
+      username: username
+    })
+  }
+
+
+
+
+
 
   return (
     <div className='main-div'>

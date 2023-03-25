@@ -1,4 +1,4 @@
-import axios from 'axios';
+import io from 'socket.io-client';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Styles/App.css';
@@ -10,19 +10,38 @@ export default function Host(props) {
   const pieceTypeO = props.pieceTypeO;
   const setPieceTypeO = props.setPieceTypeO;
   const setGameID = props.setGameID;
+
+  // State variables to keep track of temporary values
   const [tempPieceType, setTempPieceType] = useState();
   const [currentTime, setCurrentTime] = useState();
   const [imageSrc, setImageSrc] = useState();
 
-  // Check to see if there is a user, if not, redirect to start page
-  useEffect(() => { if (!username) { navigate('/'); } }, [username, navigate]);
-
-  // When the page renders, set the image src and slider value to X
+  // When the component mounts, connect to the server
   useEffect(() => {
-      setImageSrc(true);
+    const socket = io('http://localhost:8000');
+    socket.on('connect', () => {
+      console.log('Connected to server!');
+    });
+
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  // If there is no username, redirect to the start page
+  useEffect(() => {
+    if (!username) {
+      navigate('/');
+    }
+  }, [username, navigate]);
+
+  // Set the image source and slider value when the component mounts or when the piece type changes
+  useEffect(() => {
+    setImageSrc(pieceTypeO ? require('../assets/blueO.png') : require('../assets/redX.png'));
   }, [pieceTypeO]);
 
-  // When the page renders, get the current machine's date and time
+  // Get the current machine's date and time when the component mounts
   useEffect(() => {
     const date = new Date();
     const hour = date.getHours();
@@ -32,17 +51,11 @@ export default function Host(props) {
     setCurrentTime(time);
   }, []);
 
-  // When the piece type changes, update the piece type in a temp varibale
+  // When the piece type changes, update the temporary piece type and image source
   useEffect(() => {
-    if (pieceTypeO) {
-      setTempPieceType("O");
-      setImageSrc(require('../assets/blueO.png'));
-    }
-    else {
-      setTempPieceType("X");
-      setImageSrc(require('../assets/redX.png'));
-    }
-  }, [pieceTypeO, setTempPieceType, setImageSrc]);
+    setTempPieceType(pieceTypeO ? "O" : "X");
+    setImageSrc(pieceTypeO ? require('../assets/blueO.png') : require('../assets/redX.png'));
+  }, [pieceTypeO]);
 
   // Make a new variable called gameID that is made of the currentTime, the pieceTypeO, and the username
   const tempGameID = currentTime + tempPieceType + username;
@@ -54,17 +67,17 @@ export default function Host(props) {
 
   // When the player wants to create the game, send it to the database and redirect them to the waiting page
   async function handleNext() {
-    console.log("Attempting to create game");
+    console.log('Attempting to create game');
     try {
-    const response = await axios.post('http://localhost:8000/createGame', {
-      username: username,
-      pieceTypeO: pieceTypeO,
-      gameID: tempGameID
-    })
-    console.log(response);
-    return navigate('/waiting');
-    }
-    catch (error) {
+      const socket = io('http://localhost:8000');
+      socket.emit('createGame', {
+        username: username,
+        pieceTypeO: pieceTypeO,
+        gameID: tempGameID,
+      });
+      setGameID(tempGameID);
+      navigate('/waiting');
+    } catch (error) {
       console.log(error);
     }
   }
