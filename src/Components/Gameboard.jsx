@@ -15,6 +15,7 @@ export default function Gameboard(props) {
   const [gameData, setGameData] = useState();
   const [player1Piece, setPlayer1Piece] = useState('#');
   const [player2Piece, setPlayer2Piece] = useState('#');
+  const [turnToPlay, setTurnToPlay] = useState();
   const socketRef = useRef();
 
   function getGameboard(gameID) {
@@ -32,6 +33,7 @@ export default function Gameboard(props) {
         console.log(`Response: ${JSON.stringify(gameDataResponse)}`);
         setGameData(gameDataResponse);
         setGameboard(gameDataResponse.gameboard);
+        setTurnToPlay(gameDataResponse.turn);
         // Check if the player is player 1 or player 2 in the gameboard data
         if (gameDataResponse.players[0] === username) {
           // Get the player piece from the gameboard data
@@ -52,7 +54,8 @@ export default function Gameboard(props) {
       socketRef.current.on('moveMade', (data) => {
         console.log(`Move received: ${JSON.stringify(data)}`);
         // Update the gameboard state with the new move
-        setGameboard(data.gameboard);
+        setGameboard(data.game.gameboard);
+        setTurnToPlay(data.turn);
       });
       // Listen for the gameOver event from the server
       socketRef.current.on('gameOver', (data) => {
@@ -119,7 +122,7 @@ export default function Gameboard(props) {
         </div>
         <div className='gameboard-div'>
           <table className='gameboard'>
-            <tbody>
+            <tbody className={`${turnToPlay}-border`}>
               {gameboard.map((subArray, i) => (
                 <tr key={`subArray-${i}`} className='subArray'>
                   {subArray.map((value, j) => {
@@ -127,13 +130,13 @@ export default function Gameboard(props) {
                     return (
                       <td style={{ cursor: "crosshair" }} key={`value-${j}`} className={`value cell-${cell}`} onClick={() => handleMove(cell)}>
                         {value === "X" &&
-                          <img style={{ cursor: "not-allowed" }} src={redX} alt='X' className='x-icon' />
+                          <img style={{ width: "65%", height: "65%", cursor: "not-allowed" }} src={redX} alt='X' className='x-icon' />
                         }
                         {value === "O" &&
-                          <img style={{ cursor: "not-allowed" }} src={blueO} alt='O' className='o-icon' />
+                          <img style={{ width: "65%", height: "65%", cursor: "not-allowed" }} src={blueO} alt='O' className='o-icon' />
                         }
                         {value === "#" &&
-                          <p>#</p>
+                          <p></p>
                         }
                       </td>
                     );
@@ -142,12 +145,14 @@ export default function Gameboard(props) {
               ))}
             </tbody>
           </table>
+        </div>
+        <div>
           <p>GameID: {gameID}</p>
           <p> Turn to play: </p>
-          {gameData?.turn === "X" &&
+          {turnToPlay === "X" &&
             <img style={{ marginBottom: "15%" }} src={redX} alt='X' className='x-icon' />
           }
-          {gameData?.turn === "O" &&
+          {turnToPlay === "O" &&
             <img style={{ marginBottom: "15%" }} src={blueO} alt='O' className='o-icon' />
           }
         </div>
