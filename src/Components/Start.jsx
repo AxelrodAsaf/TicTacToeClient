@@ -29,7 +29,7 @@ export default function Start(props) {
             <button onClick={() => navigate(`/joingame`)} type='button' className='button-start'>JOIN A GAME</button>
             {/* <button onClick={() => navigate(`/viewgame`)} type='button' className='button-start'>VIEW A GAME</button> */}
           </div>
-          <button onClick={() => window.location.reload()}>BACK</button>
+          <button onClick={() => window.location.reload()}>CHANGE NAME</button>
         </div>
       </div>
     </div>
