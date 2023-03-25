@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Styles/App.css';
 import '../Styles/Connecting.css';
 
 export default function Connecting(props) {
   const gameID = props.gameID;
-  const pieceTypeO = props.pieceTypeO;
   const username = props.username;
   const navigate = useNavigate();
-  const [imageSrc, setImageSrc] = useState();
 
   // When starting the page, check if there is a gameID, if not, redirect to home page
   useEffect(() => {
@@ -19,15 +17,6 @@ export default function Connecting(props) {
       navigate('/');
     }
   }, [gameID, navigate, username]);
-
-  useEffect(() => {
-    if (!pieceTypeO) {
-      setImageSrc(require('../assets/blueO.png'));
-    }
-    else {
-      setImageSrc(require('../assets/redX.png'));
-    }
-  }, [setImageSrc, pieceTypeO]);
 
   // Set a timer for 3 seconds and then redirect to home page
   useEffect(() => {
@@ -45,12 +34,6 @@ export default function Connecting(props) {
           <hr style={{ width: "50%" }} />
           <h3>Game ID: {gameID}</h3>
           <hr style={{ width: "50%" }} />
-        </div>
-
-
-        <div className='bottom'>
-          <h2>{username}, you will be playing as:</h2>
-          <img src={imageSrc} alt={pieceTypeO ? "BlueO" : "RedX"} />
         </div>
         <button onClick={() => navigate('/')}>BACK</button>
       </div>
