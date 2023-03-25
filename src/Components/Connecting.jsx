@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import io from 'socket.io-client';
 import '../Styles/App.css';
 import '../Styles/Connecting.css';
 
@@ -18,12 +19,31 @@ export default function Connecting(props) {
     }
   }, [gameID, navigate, username]);
 
-  // Set a timer for 3 seconds and then redirect to home page
+  // Connect to the server when the component mounts
   useEffect(() => {
-    setTimeout(() => {
+    const socket = io('http://localhost:8000');
+    socket.on('connect', () => {
+      console.log('Connected to server!');
+      // Send the game ID and username to the server to connect to the game
+      socket.emit('joinGame', { gameID: gameID, username: username });
+    });
+    // Disconnect from the server when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, [gameID, username]);
+
+  // When the server sends the 'startGame' event, redirect to the game board
+  useEffect(() => {
+    const socket = io('http://localhost:8000');
+    socket.on('startGame', () => {
       navigate(`/gameboard/${gameID}`);
-    }, 1500);
-  }, [navigate, gameID]);
+    });
+    // Disconnect from the server when the component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, [gameID, navigate]);
 
   return (
     <div className='main-div'>
