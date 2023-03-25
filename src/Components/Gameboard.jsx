@@ -10,14 +10,25 @@ export default function Gameboard(props) {
   const navigate = useNavigate();
   const username = props.username;
   const gameID = props.gameID;
-  const pieceTypeO = props.pieceTypeO;
+  const [playerPiece, setPlayerPiece] = useState("X");
   const [gameboard, setGameboard] = useState([]);
 
   async function getGameboard(gameID) {
     const response = await axios.get(`http://localhost:8000/getGame/${gameID}`);
+    console.log(`Response: ${JSON.stringify(response.data)}`);
     const gameboardData = response.data;
     console.log(gameboardData)
-    setGameboard(gameboardData);
+    setGameboard(gameboardData.gameboard);
+    // Check if the player is player 1 or player 2 in the gameboard data
+    if (gameboardData.players[0] === username) {
+      setPlayerPiece("O");
+    } else if (gameboardData.players[1] === username) {
+      setPlayerPiece("X");
+    }
+  }
+
+  function handleMove(cell) {
+    console.log(`Filling ${cell} gamePiece: ${playerPiece}`);
   }
 
   useEffect(() => {
@@ -31,7 +42,7 @@ export default function Gameboard(props) {
       <div className='main-subdiv'>
         <div className='top-text'>
           <h1>Hello {username}!</h1>
-          <h1>You are playing as {pieceTypeO}.</h1>
+          <h1>You are playing as {playerPiece}</h1>
         </div>
         <div className='gameboard-div'>
           <table className='gameboard'>
@@ -39,10 +50,9 @@ export default function Gameboard(props) {
               {gameboard.map((subArray, i) => (
                 <tr key={`subArray-${i}`} className='subArray'>
                   {subArray.map((value, j) => {
-                    const row = Math.floor(j / 3);
-                    const col = i * 3 + (j % 3);
+                    const cell = i * 3 + (j % 3);
                     return (
-                      <td key={`value-${j}`} className={`value row-${row} col-${col}`}>
+                      <td key={`value-${j}`} className={`value cell-${cell}`} onClick={()=> handleMove(cell)}>
                         {value === "X" &&
                         <img src={redX} alt='X' className='x-icon'/>
                         }
@@ -56,7 +66,6 @@ export default function Gameboard(props) {
               ))}
             </tbody>
           </table>
-
         </div>
 
 

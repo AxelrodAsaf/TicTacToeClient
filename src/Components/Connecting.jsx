@@ -32,7 +32,7 @@ export default function Connecting(props) {
   // Set a timer for 3 seconds and then redirect to home page
   useEffect(() => {
     setTimeout(() => {
-      navigate(`/gameboard/:${gameID}`);
+      navigate(`/gameboard/${gameID}`);
     }, 1500);
   }, [navigate, gameID]);
 
