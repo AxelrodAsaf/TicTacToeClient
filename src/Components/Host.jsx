@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Styles/App.css';
@@ -51,6 +52,24 @@ export default function Host(props) {
     setGameID(tempGameID);
   }, [tempGameID, setGameID]);
 
+  // When the player wants to create the game, send it to the database and redirect them to the waiting page
+  async function handleNext() {
+    console.log("Attempting to create game");
+    try {
+    const response = await axios.post('http://localhost:8000/createGame', {
+      username: username,
+      pieceTypeO: pieceTypeO,
+      gameID: tempGameID
+    })
+    console.log(response);
+    return navigate(`/gameboard/${tempGameID}`); // For testing purposes, send directly to the gameboard
+    // return navigate('/waiting');
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
+
 
   return (
     <div className='main-div'>
@@ -64,7 +83,7 @@ export default function Host(props) {
 
         <div className='nav-handles'>
           <button onClick={() => navigate('/')}>BACK</button>
-          <button style={{fontWeight: "bold"}} onClick={() => navigate('/waiting')}>NEXT</button>
+          <button style={{fontWeight: "bold"}} onClick={() => handleNext()}>NEXT</button>
         </div>
       </div>
     </div>
