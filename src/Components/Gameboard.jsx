@@ -102,7 +102,7 @@ export default function Gameboard(props) {
       <div className='main-subdiv'>
         <div className='top-text'>
           <div>
-            <h1>{gameData?.players[0]}</h1>
+            <h1 style={{ textDecoration: "underline" }}>{gameData?.players[0]}</h1>
             {player1Piece === "X" &&
               <img style={{ marginBottom: "50%" }} src={redX} alt='X' className='x-icon' />
             }
@@ -111,7 +111,7 @@ export default function Gameboard(props) {
             }
           </div>
           <div>
-            <h1>{gameData?.players[1]}</h1>
+            <h1 style={{ textDecoration: "underline" }}>{gameData?.players[1]}</h1>
             {player2Piece === "X" &&
               <img style={{ marginBottom: "50%" }} src={redX} alt='X' className='x-icon' />
             }

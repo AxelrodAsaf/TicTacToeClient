@@ -95,7 +95,7 @@ export default function Host(props) {
 
         <div className='nav-handles'>
           <button onClick={() => navigate('/')}>BACK</button>
-          <button style={{fontWeight: "bold"}} onClick={() => handleNext()}>NEXT</button>
+          <button style={{ fontWeight: "bold" }} onClick={() => handleNext()}>NEXT</button>
         </div>
       </div>
     </div>
