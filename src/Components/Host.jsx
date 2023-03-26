@@ -1,4 +1,3 @@
-import io from 'socket.io-client';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Styles/App.css';
@@ -10,24 +9,12 @@ export default function Host(props) {
   const pieceTypeO = props.pieceTypeO;
   const setPieceTypeO = props.setPieceTypeO;
   const setGameID = props.setGameID;
+  const socket = props.socket;
 
   // State variables to keep track of temporary values
   const [tempPieceType, setTempPieceType] = useState();
   const [currentTime, setCurrentTime] = useState();
   const [imageSrc, setImageSrc] = useState();
-
-  // When the component mounts, connect to the server
-  useEffect(() => {
-    const socket = io('http://localhost:8000');
-    socket.on('connect', () => {
-      console.log('Connected to server!');
-    });
-
-    // Clean up the socket connection when the component unmounts
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
 
   // If there is no username, redirect to the start page
   useEffect(() => {
@@ -69,7 +56,6 @@ export default function Host(props) {
   async function handleNext() {
     console.log('Attempting to create game');
     try {
-      const socket = io('http://localhost:8000');
       socket.emit('createGame', {
         username: username,
         pieceTypeO: pieceTypeO,

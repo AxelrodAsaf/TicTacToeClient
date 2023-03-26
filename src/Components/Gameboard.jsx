@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import io from 'socket.io-client';
 import redX from '../assets/redX.png';
 import blueO from '../assets/blueO.png';
 import '../Styles/App.css';
@@ -10,25 +9,24 @@ export default function Gameboard(props) {
   const navigate = useNavigate();
   const username = props.username;
   const gameID = props.gameID;
+  const socket = props.socket;
   const [playerPiece, setPlayerPiece] = useState('X');
   const [gameboard, setGameboard] = useState([]);
   const [gameData, setGameData] = useState();
   const [player1Piece, setPlayer1Piece] = useState('#');
   const [player2Piece, setPlayer2Piece] = useState('#');
   const [turnToPlay, setTurnToPlay] = useState();
-  const socketRef = useRef();
 
-  function getGameboard(gameID) {
-    socketRef.current.emit("getGame", { gameID: gameID });
-  }
 
   useEffect(() => {
+    function getGameboard(gameID) {
+      socket.emit("getGame", { gameID: gameID });
+    }
+
     if (gameID) {
-      // Connect to the server using socket.io
-      socketRef.current = io.connect('http://localhost:8000');
       getGameboard(gameID);
       // Listen for "getGameSuccess" event
-      socketRef.current.on("getGameSuccess", (data) => {
+      socket.on("getGameSuccess", (data) => {
         const gameDataResponse = data.gameData;
         console.log(`Response: ${JSON.stringify(gameDataResponse)}`);
         setGameData(gameDataResponse);
@@ -46,19 +44,19 @@ export default function Gameboard(props) {
         setPlayer2Piece(gameDataResponse.player2Piece);
       });
       // Listen for "getGameError" event
-      socketRef.current.on("getGameError", (data) => {
+      socket.on("getGameError", (data) => {
         const error = data.error;
         console.error(`Error fetching gameboard: ${error}`);
       });
       // Listen for the move event from the server
-      socketRef.current.on('moveMade', (data) => {
+      socket.on('moveMade', (data) => {
         console.log(`Move received: ${JSON.stringify(data)}`);
         // Update the gameboard state with the new move
         setGameboard(data.game.gameboard);
         setTurnToPlay(data.turn);
       });
       // Listen for the gameOver event from the server
-      socketRef.current.on('gameOver', (data) => {
+      socket.on('gameOver', (data) => {
         console.log(data.winner)
         if (data.winner === "X") {
           return navigate('/Xwin');
@@ -73,18 +71,12 @@ export default function Gameboard(props) {
         navigate('/');
       });
     }
-    // Clean up the socket connection when the component unmounts
-    return () => {
-      console.log("Disconnecting from server");
-      socketRef.current.disconnect();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameID]);
+  }, [gameID, username, navigate, socket]);
 
   function handleMove(cell) {
     console.log(`Attempting to fill ${cell} with gamePiece: ${playerPiece}`);
     // Emit the move event to the server using socket.io
-    socketRef.current.emit('makeMove', {
+    socket.emit('makeMove', {
       gameID: gameID,
       cell: cell,
       playerPiece: playerPiece,
