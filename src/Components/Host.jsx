@@ -60,6 +60,7 @@ export default function Host(props) {
         username: username,
         pieceTypeO: pieceTypeO,
         gameID: tempGameID,
+        player1Piece: tempPieceType
       });
       setGameID(tempGameID);
       navigate('/waiting');
