@@ -18,7 +18,8 @@ function App() {
   const [gameID, setGameID] = useState('');
 
   if (socket === null) {
-    socket = io(`http://localhost:8000`);
+    socket = io(`https://asaftictactoe.onrender.com`);
+    // socket = io(`http://localhost:8000`);
     socket.on('connect', () => {
       console.log('Connected to server!');
     });
