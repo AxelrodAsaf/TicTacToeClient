@@ -25,7 +25,14 @@ Once the application is running, simply navigate to http://localhost:3001 in you
 - Socket.io
 
 # Screenshots
+Home screen:
 ![Home Screen Screenshot](./screenshots/HomeScreen.png)
+
+Hosting a game:
 ![Preferred Piece Screenshot](./screenshots/PreferredPiece.png)
+
+Joining a game:
 ![Join Game Screenshot](./screenshots/JoinGame.png)
+
+Playing a game:
 ![Gameboard Screenshot](./screenshots/Gameboard.png)
