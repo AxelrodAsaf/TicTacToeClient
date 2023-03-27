@@ -5,6 +5,8 @@ import blueO from '../assets/blueO.png';
 import '../Styles/App.css';
 import '../Styles/Gameboard.css';
 
+var needToUpdateGameboard  = true;
+
 export default function Gameboard(props) {
   const navigate = useNavigate();
   const username = props.username;
@@ -19,58 +21,61 @@ export default function Gameboard(props) {
 
 
   useEffect(() => {
-    function getGameboard(gameID) {
+    if (needToUpdateGameboard) {
       socket.emit("getGame", { gameID: gameID });
+      needToUpdateGameboard = false;
     }
 
-    if (gameID) {
-      getGameboard(gameID);
-      // Listen for "getGameSuccess" event
-      socket.on("getGameSuccess", (data) => {
-        const gameDataResponse = data.gameData;
-        console.log(`Response: ${JSON.stringify(gameDataResponse)}`);
-        setGameData(gameDataResponse);
-        setGameboard(gameDataResponse.gameboard);
-        setTurnToPlay(gameDataResponse.turn);
-        // Check if the player is player 1 or player 2 in the gameboard data
-        if (gameDataResponse.players[0] === username) {
-          // Get the player piece from the gameboard data
-          setPlayerPiece(gameDataResponse.player1Piece);
-        } else {
-          // Get the player piece from the gameboard data
-          setPlayerPiece(gameDataResponse.player2Piece);
-        }
-        setPlayer1Piece(gameDataResponse.player1Piece);
-        setPlayer2Piece(gameDataResponse.player2Piece);
-      });
-      // Listen for "getGameError" event
-      socket.on("getGameError", (data) => {
-        const error = data.error;
-        console.error(`Error fetching gameboard: ${error}`);
-      });
-      // Listen for the move event from the server
-      socket.on('moveMade', (data) => {
-        console.log(`Move received: ${JSON.stringify(data)}`);
-        // Update the gameboard state with the new move
-        setGameboard(data.game.gameboard);
-        setTurnToPlay(data.turn);
-      });
-      // Listen for the gameOver event from the server
-      socket.on('gameOver', (data) => {
-        console.log(data.winner)
-        if (data.winner === "X") {
-          return navigate('/Xwin');
-        }
-        if (data.winner === "O") {
-          return navigate('/Owin');
-        }
-        if (data.winner === "T") {
-          return navigate('/Draw');
-        }
-        // Redirect to the lobby page when the game is over
-        navigate('/');
-      });
-    }
+
+    // Listen for "getGameSuccess" event
+    socket.on("getGameSuccess", (data) => {
+      const gameDataResponse = data.gameData;
+      console.log(`Response: ${JSON.stringify(gameDataResponse)}`);
+      setGameData(gameDataResponse);
+      setGameboard(gameDataResponse.gameboard);
+      setTurnToPlay(gameDataResponse.turn);
+
+      // Check if the player is player 1 or player 2 in the gameboard data
+      if (gameDataResponse.players[0] === username) {
+        // Get the player piece from the gameboard data
+        setPlayerPiece(gameDataResponse.player1Piece);
+      } else {
+        // Get the player piece from the gameboard data
+        setPlayerPiece(gameDataResponse.player2Piece);
+      }
+      setPlayer1Piece(gameDataResponse.player1Piece);
+      setPlayer2Piece(gameDataResponse.player2Piece);
+    });
+
+    // Listen for "getGameError" event
+    socket.on("getGameError", (data) => {
+      const error = data.error;
+      console.error(`Error fetching gameboard: ${error}`);
+    });
+
+    // Listen for the move event from the server
+    socket.on('moveMade', (data) => {
+      console.log(`Move received: ${JSON.stringify(data)}`);
+      // Update the gameboard state with the new move
+      setGameboard(data.game.gameboard);
+      setTurnToPlay(data.turn);
+    });
+
+    // Listen for the gameOver event from the server
+    socket.on('gameOver', (data) => {
+      console.log(data.winner)
+      if (data.winner === "X") {
+        return navigate('/Xwin');
+      }
+      if (data.winner === "O") {
+        return navigate('/Owin');
+      }
+      if (data.winner === "T") {
+        return navigate('/Draw');
+      }
+      // Redirect to the lobby page when the game is over
+      navigate('/');
+    });
   }, [gameID, username, navigate, socket]);
 
   function handleMove(cell) {
