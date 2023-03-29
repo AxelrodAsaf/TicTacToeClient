@@ -5,7 +5,7 @@ import blueO from '../assets/blueO.png';
 import '../Styles/App.css';
 import '../Styles/Gameboard.css';
 
-var needToUpdateGameboard  = true;
+var needToUpdateGameboard = true;
 
 export default function Gameboard(props) {
   const navigate = useNavigate();
@@ -76,7 +76,24 @@ export default function Gameboard(props) {
       // Redirect to the lobby page when the game is over
       navigate('/');
     });
+
+    // Listen for the playerDisconnected event from the server
+    socket.on('playerDisconnected', (data) => {
+      console.log(`Player disconnected`);
+      navigate('/playerDisconnected');
+    });
+
   }, [gameID, username, navigate, socket]);
+    function handleExit() {
+      socket.emit('removePlayer', { gameID: gameID, username: username });
+      navigate('/');
+    }
+
+    function handleBack() {
+      socket.emit('removePlayer', { gameID: gameID, username: username });
+      navigate(`/joingame`);
+    }
+
 
   function handleMove(cell) {
     console.log(`Attempting to fill ${cell} with gamePiece: ${playerPiece}`);
@@ -155,8 +172,8 @@ export default function Gameboard(props) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "row" }}>
-          <button style={{ marginTop: "5%" }} onClick={() => navigate(`/joingame`)} type='button' className='button-start'>BACK</button>
-          <button style={{ marginTop: "5%" }} onClick={() => navigate(`/`)} type='button' className='button-start'>EXIT</button>
+          <button style={{ marginTop: "5%" }} onClick={() => handleBack()} type='button' className='button-start'>BACK</button>
+          <button style={{ marginTop: "5%" }} onClick={() => handleExit()} type='button' className='button-start'>EXIT</button>
         </div>
       </div>
     </div>
