@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 
 export default function XWin() {
   const navigate = useNavigate();
+
+
   return (
     <div className='main-div'>
       <div className='main-subdiv'>

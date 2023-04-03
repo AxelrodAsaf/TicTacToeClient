@@ -29,14 +29,11 @@ export default function Waiting(props) {
     }
   }, [setImageSrc, pieceTypeO]);
 
-
   // Listen for "startGame" event from the server
   socket.on('startGame', (response) => {
     console.log(`${response.message}`);
     navigate(`/gameboard/:${gameID}`);
   });
-
-
 
   // Copy the game ID to the clipboard
   function copyGameID() {

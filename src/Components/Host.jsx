@@ -44,7 +44,7 @@ export default function Host(props) {
     setImageSrc(pieceTypeO ? require('../assets/blueO.png') : require('../assets/redX.png'));
   }, [pieceTypeO]);
 
-  // Make a new variable called gameID that is made of the currentTime, the pieceTypeO, and the username
+  // Make a new variable called "gameID" that is made of the current time, the piece type, and the username
   const tempGameID = currentTime + tempPieceType + username;
 
   // Set the gameID to the tempGameID variable

@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 
 export default function PlayerDisconnected() {
   const navigate = useNavigate();
+
+
   return (
     <div className='main-div'>
       <div className='main-subdiv'>
