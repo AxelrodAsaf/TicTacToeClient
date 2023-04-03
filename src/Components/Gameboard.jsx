@@ -4,6 +4,7 @@ import redX from '../assets/redX.png';
 import blueO from '../assets/blueO.png';
 import '../Styles/App.css';
 import '../Styles/Gameboard.css';
+import LoadingSpinner from './LoadingSpinner';
 
 var needToUpdateGameboard = true;
 
@@ -18,9 +19,21 @@ export default function Gameboard(props) {
   const [player1Piece, setPlayer1Piece] = useState('#');
   const [player2Piece, setPlayer2Piece] = useState('#');
   const [turnToPlay, setTurnToPlay] = useState();
+  const [isLoading, setIsLoading] = useState(true);
 
 
   useEffect(() => {
+
+    const timeoutID = setTimeout(() => {
+      if (isLoading) {
+        console.log(`Loading is: ${isLoading}`);
+        console.log(`Navigating to: /error`);
+        navigate('/error');
+      }
+    }, 3000);
+
+    console.log(timeoutID)
+
     if (needToUpdateGameboard) {
       socket.emit("getGame", { gameID: gameID });
       needToUpdateGameboard = false;
@@ -29,8 +42,10 @@ export default function Gameboard(props) {
 
     // Listen for "getGameSuccess" event
     socket.on("getGameSuccess", (data) => {
+      console.log("getGameSuccess");
+      setIsLoading(false);
+      console.log(`setIsLoading: ${isLoading}`);
       const gameDataResponse = data.gameData;
-      console.log(`Response: ${JSON.stringify(gameDataResponse)}`);
       setGameData(gameDataResponse);
       setGameboard(gameDataResponse.gameboard);
       setTurnToPlay(gameDataResponse.turn);
@@ -83,17 +98,18 @@ export default function Gameboard(props) {
       navigate('/playerDisconnected');
     });
 
-  }, [gameID, username, navigate, socket]);
-    function handleExit() {
-      socket.emit('removePlayer', { gameID: gameID, username: username });
-      navigate('/');
-    }
+  }, [gameID, username, navigate, socket, isLoading]);
 
-    function handleBack() {
-      socket.emit('removePlayer', { gameID: gameID, username: username });
-      navigate(`/joingame`);
-    }
 
+  function handleExit() {
+    socket.emit('removePlayer', { gameID: gameID, username: username });
+    navigate('/');
+  }
+
+  function handleBack() {
+    socket.emit('removePlayer', { gameID: gameID, username: username });
+    navigate(`/joingame`);
+  }
 
   function handleMove(cell) {
     console.log(`Attempting to fill ${cell} with gamePiece: ${playerPiece}`);
@@ -107,12 +123,9 @@ export default function Gameboard(props) {
   }
 
 
-
-
-
-
   return (
     <div className='main-div'>
+      {isLoading ? <LoadingSpinner /> :
       <div className='main-subdiv'>
         <div className='top-text'>
           <div>
@@ -176,6 +189,7 @@ export default function Gameboard(props) {
           <button style={{ marginTop: "5%" }} onClick={() => handleExit()} type='button' className='button-start'>EXIT</button>
         </div>
       </div>
+      }
     </div>
   );
 }
