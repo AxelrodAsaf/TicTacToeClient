@@ -5,6 +5,7 @@ import JoinGame from './Components/Join';
 import Waiting from './Components/Waiting';
 import Gameboard from './Components/Gameboard';
 import PlayerDisconnected from './Components/PlayerDisconnected';
+import Error from './Components/Error';
 import Xwin from './Components/Xwin';
 import Owin from './Components/Owin';
 import Draw from './Components/Draw';
@@ -36,6 +37,7 @@ function App() {
         <Route path="/joingame" element={<JoinGame username={username} setUsername={setUsername} pieceTypeO={pieceTypeO} setPieceTypeO={setPieceTypeO} gameID={gameID} setGameID={setGameID} socket={socket} />} />
         <Route path="/gameboard/:gameID" element={<Gameboard username={username} setUsername={setUsername} pieceTypeO={pieceTypeO} setPieceTypeO={setPieceTypeO} gameID={gameID} setGameID={setGameID} socket={socket} />} />
         <Route path="/playerDisconnected" element={<PlayerDisconnected />} />
+        <Route path="/error" element={<Error />} />
         <Route path="/Xwin" element={<Xwin />} />
         <Route path="/Owin" element={<Owin />} />
         <Route path="/Draw" element={<Draw />} />

@@ -32,6 +32,7 @@ export default function Waiting(props) {
   // Listen for "startGame" event from the server
   socket.on('startGame', (response) => {
     console.log(`${response.message}`);
+
     navigate(`/gameboard/:${gameID}`);
   });
 
