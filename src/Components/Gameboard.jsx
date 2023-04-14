@@ -6,7 +6,6 @@ import '../Styles/App.css';
 import '../Styles/Gameboard.css';
 import LoadingSpinner from './LoadingSpinner';
 
-var needToUpdateGameboard = true;
 
 export default function Gameboard(props) {
   const navigate = useNavigate();
@@ -24,27 +23,15 @@ export default function Gameboard(props) {
 
   useEffect(() => {
 
-    const timeoutID = setTimeout(() => {
-      if (isLoading) {
-        console.log(`Loading is: ${isLoading}`);
-        console.log(`Navigating to: /error`);
-        navigate('/error');
-      }
-    }, 3000);
-
-    console.log(timeoutID)
-
-    if (needToUpdateGameboard) {
-      socket.emit("getGame", { gameID: gameID });
-      needToUpdateGameboard = false;
-    }
-
+    socket.emit("getGame", { gameID: gameID });
+    console.log("Trying to getGame");
+    console.log("setIsLoading: " + isLoading);
 
     // Listen for "getGameSuccess" event
     socket.on("getGameSuccess", (data) => {
       console.log("getGameSuccess");
       setIsLoading(false);
-      console.log(`setIsLoading: ${isLoading}`);
+      console.log("setIsLoading: " + isLoading);
       const gameDataResponse = data.gameData;
       setGameData(gameDataResponse);
       setGameboard(gameDataResponse.gameboard);
@@ -103,16 +90,18 @@ export default function Gameboard(props) {
 
   function handleExit() {
     socket.emit('removePlayer', { gameID: gameID, username: username });
+    console.log("Trying to remove Player");
     navigate('/');
   }
 
   function handleBack() {
     socket.emit('removePlayer', { gameID: gameID, username: username });
+    console.log("Trying to remove Player");
     navigate(`/joingame`);
   }
 
   function handleMove(cell) {
-    console.log(`Attempting to fill ${cell} with gamePiece: ${playerPiece}`);
+    console.log(`Trying to fill ${cell} with gamePiece: ${playerPiece}`);
     // Emit the move event to the server using socket.io
     socket.emit('makeMove', {
       gameID: gameID,
